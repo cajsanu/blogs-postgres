@@ -19,14 +19,18 @@ const tokenExtractor = (req, res, next) => {
 };
 
 router.get("/", async (req, res) => {
-  const blogs = await Blog.findAll();
-  console.log(blogs);
+  const blogs = await Blog.findAll({
+    attributes: { exclude: ["userId"] },
+    include: {
+      model: User,
+      attributes: ["name"],
+    },
+  });
   res.json(JSON.stringify(blogs));
 });
 
 router.post("/", tokenExtractor, async (req, res, next) => {
   try {
-    console.log(req.decodedToken);
     const user = await User.findByPk(req.decodedToken.id);
     const blog = await Blog.create({
       ...req.body,
