@@ -7,12 +7,12 @@ router.get("/", async (req, res) => {
   res.json(JSON.stringify(blogs));
 });
 
-router.post("/", async (req, res) => {
+router.post("/", async (req, res, next) => {
   try {
     const blog = await Blog.create(req.body);
     return res.json(blog.toJSON());
   } catch (error) {
-    return res.status(400).json({ error });
+    next(error);
   }
 });
 
@@ -20,31 +20,30 @@ router.delete("/:id", async (req, res, next) => {
   const blog = await Blog.findByPk(req.params.id);
   try {
     await blog.destroy();
-    return res.status(200);
+    return res.status(204).end();
   } catch (error) {
-    // next(error)
-    res.status(400).json({ error });
+    next(error);
   }
 });
 
-router.get("/:id", async (req, res) => {
-  const blog = await Blog.findByPk(req.params.id);
-  if (blog) {
+router.get("/:id", async (req, res, next) => {
+  try {
+    const blog = await Blog.findByPk(req.params.id);
     console.log(blog);
     res.json(blog);
-  } else {
-    res.status(404).end();
+  } catch (error) {
+    next(error);
   }
 });
 
-router.put("/:id", async (req, res) => {
-  const blog = await Blog.findByPk(req.params.id);
-  if (blog) {
+router.put("/:id", async (req, res, next) => {
+  try {
+    const blog = await Blog.findByPk(req.params.id);
     blog.likes += 1;
     await blog.save();
     res.json(blog);
-  } else {
-    res.status(404).end();
+  } catch (error) {
+    next(error)
   }
 });
 
