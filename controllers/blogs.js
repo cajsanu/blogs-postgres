@@ -3,6 +3,7 @@ const { Blog } = require("../models");
 const { User } = require("../models");
 const jwt = require("jsonwebtoken");
 const { SECRET } = require("../utils/config");
+const { Op } = require("sequelize");
 
 const tokenExtractor = (req, res, next) => {
   const authorization = req.get("authorization");
@@ -19,12 +20,22 @@ const tokenExtractor = (req, res, next) => {
 };
 
 router.get("/", async (req, res) => {
+  const where = {};
+
+  if (req.query.search) {
+    where[Op.or] = [
+      { title: { [Op.iLike]: `%${req.query.search}%` } },
+      { author: { [Op.iLike]: `%${req.query.search}%` } },
+    ];
+  }
+
   const blogs = await Blog.findAll({
     attributes: { exclude: ["userId"] },
     include: {
       model: User,
       attributes: ["name"],
     },
+    where,
   });
   res.json(JSON.stringify(blogs));
 });
@@ -43,13 +54,18 @@ router.post("/", tokenExtractor, async (req, res, next) => {
   }
 });
 
-router.delete("/:id", async (req, res, next) => {
+router.delete("/:id", tokenExtractor, async (req, res, next) => {
   const blog = await Blog.findByPk(req.params.id);
-  try {
-    await blog.destroy();
-    return res.status(204).end();
-  } catch (error) {
-    next(error);
+  const user = await User.findByPk(req.decodedToken.id);
+  if (blog.userId === user.id) {
+    try {
+      await blog.destroy();
+      return res.status(204).end();
+    } catch (error) {
+      next(error);
+    }
+  } else {
+    return res.status(400).json({ error: "Action not permitted" });
   }
 });
 
