@@ -1,5 +1,6 @@
 const { Model, DataTypes } = require('sequelize')
 const { sequelize } = require('../utils/db')
+const Author = require("./Author")
 
 class Blog extends Model {}
 Blog.init({
@@ -25,13 +26,17 @@ Blog.init({
     allowNull: false,
     defaultValue: 0
   },
+  year: {
+    type: DataTypes.INTEGER, 
+    max: 2024,
+    min: 1991
+  },
   date: {
     type: DataTypes.DATE
   }
 }, {
   sequelize,
   underscored: true,
-  timestamps: false,
   modelName: 'blog'
 })
 
