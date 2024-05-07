@@ -28,8 +28,10 @@ Blog.init({
   },
   year: {
     type: DataTypes.INTEGER, 
-    max: 2024,
-    min: 1991
+    validate: {
+      max: 2024,
+      min: 1991
+    }
   },
   date: {
     type: DataTypes.DATE
