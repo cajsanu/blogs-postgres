@@ -33,6 +33,10 @@ Blog.init({
       min: 1991
     }
   },
+  read: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false
+  },
   date: {
     type: DataTypes.DATE
   }
