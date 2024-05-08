@@ -2,6 +2,7 @@ const Blog = require("./Blog");
 const User = require("./User");
 // const Author = require("./Author")
 const UserReadingList = require("./ReadingList");
+const ActiveToken = require("./ActiveToken")
 
 User.hasMany(Blog);
 Blog.belongsTo(User);
@@ -15,4 +16,5 @@ module.exports = {
   User,
   // Author
   UserReadingList,
+  ActiveToken
 };

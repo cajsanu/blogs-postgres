@@ -1,5 +1,6 @@
 const jwt = require("jsonwebtoken");
 const { SECRET } = require("../utils/config");
+const { ActiveToken } = require("../models");
 
 const errorHandler = (error, request, response, next) => {
   console.log(error.message);
@@ -14,19 +15,28 @@ const errorHandler = (error, request, response, next) => {
     return response.status(400).json({ error: error.message });
   }
   if (error.name === "SequelizeValidationError") {
-    return response
-      .status(400)
-      .send({ error: error.message });
+    return response.status(400).send({ error: error.message });
   }
 
   next(error);
 };
 
-const tokenExtractor = (req, res, next) => {
+const tokenExtractor = async (req, res, next) => {
   const authorization = req.get("authorization");
   if (authorization && authorization.toLowerCase().startsWith("bearer ")) {
     try {
-      req.decodedToken = jwt.verify(authorization.substring(7), SECRET);
+      const decodedToken = jwt.verify(authorization.substring(7), SECRET);
+      const activeToken = await ActiveToken.findOne({
+        where: {
+          activeToken: authorization.substring(7),
+        },
+      });
+      if (activeToken) {
+        req.decodedToken = decodedToken;
+        req.activeToken = activeToken
+      } else {
+        throw new Error("Token not valid")
+      }
     } catch (error) {
       return res.status(401).json({ error: "token invalid" });
     }
