@@ -17,7 +17,7 @@ router.get("/", async (req, res) => {
   const blogs = await Blog.findAll({
     group: ["blog.id", "user.id"],
     order: [[Sequelize.fn("max", Sequelize.col("likes")), "DESC"]],
-    attributes: { exclude: ["userId"] },
+    attributes: { exclude: ["userId", "createdAt", "updatedAt", "read"] },
     include: {
       model: User,
       attributes: ["name"],
