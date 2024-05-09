@@ -9,6 +9,11 @@ ActiveToken.init(
       primaryKey: true,
       autoIncrement: true,
     },
+    userId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: { model: "users", key: "id" },
+    },
     activeToken: {
       type: DataTypes.STRING,
       allowNull: false,

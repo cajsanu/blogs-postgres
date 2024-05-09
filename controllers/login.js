@@ -31,6 +31,7 @@ router.post("/", async (req, res) => {
   const token = jwt.sign(userForToken, SECRET, {expiresIn: 60 * 60});
 
   await ActiveToken.create({
+    userId: user.id,
     activeToken: token,
   });
 

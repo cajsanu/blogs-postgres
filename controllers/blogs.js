@@ -1,5 +1,6 @@
 const router = require("express").Router();
-const { Blog } = require("../models");
+const { sequelize } = require('../utils/db')
+const { Blog, UserReadingList } = require("../models");
 const { User } = require("../models");
 const { Op, Sequelize } = require("sequelize");
 const { tokenExtractor } = require("../utils/middleware");
@@ -46,7 +47,15 @@ router.delete("/:id", tokenExtractor, async (req, res, next) => {
   const user = await User.findByPk(req.decodedToken.id);
   if (blog.userId === user.id) {
     try {
-      await blog.destroy();
+      await sequelize.transaction(async t => {
+        await UserReadingList.destroy({
+          where: {
+            blogId: blog.id
+          },
+          transction: t
+        })
+        await blog.destroy({ transaction: t });
+      })
       return res.status(204).end();
     } catch (error) {
       next(error);
