@@ -39,8 +39,8 @@ The backend provides API endpoints to manage users, blogs, and user interactions
 
 ### Installation
 - first run `npm install`
-- start the PostrgreSQL database in a Docker container with `docker run --name blogs-postgres -e POSTGRES_PASSWORD=mypassword -d postgres`
+- start the PostrgreSQL database in a Docker container with `docker run --name blogs-postgres -e POSTGRES_PASSWORD={your_password} -d postgres`
 
-- run with `node index.js` or in development mode with `npm run dev`
+- run with `npm run dev`
 
 
