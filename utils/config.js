@@ -1,7 +1,7 @@
-require('dotenv').config()
+import { ENV } from "./env"
 
 module.exports = {
-  DATABASE_URL: process.env.DATABASE_URL,
+  DATABASE_URL: ENV.DATABASE_URL,
+  SECRET: ENV.SECRET,
   PORT: process.env.PORT || 3001,
-  SECRET: process.env.SECRET
 }
